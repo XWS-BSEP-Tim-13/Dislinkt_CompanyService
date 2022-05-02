@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/grpc/proto";
+
+package company;
+
+import "google/api/annotations.proto";
+
+service CompanyService{
+  rpc Get(GetRequest) returns(GetResponse) {
+    option (google.api.http) = {
+      get: "/company/{id}"
+    };
+  }
+  rpc GetAll(GetAllRequest) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/company/"
+    };
+  }
+}
+
+message GetRequest {
+  string id = 1;
+}
+
+message GetResponse {
+  Company company = 1;
+}
+
+message GetAllRequest {
+}
+
+message GetAllResponse {
+  repeated Company companies = 1;
+}
+
+message Company {
+  string id = 1;
+  string companyName = 2;
+  string username = 3;
+  string description = 4;
+  string location = 5;
+  string website = 6;
+  string companySize = 7;
+  string industry = 8;
+  repeated JobOffer jobOffers = 9;
+}
+
+message JobOffer {
+  string id = 1;
+  string position = 2;
+  string jobDescription = 3;
+  string prerequisites = 4;
+  Company company = 5;
+}

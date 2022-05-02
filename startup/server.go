@@ -1,4 +1,4 @@
-package server
+package startup
 
 import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/application"

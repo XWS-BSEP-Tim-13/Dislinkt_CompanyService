@@ -1,13 +1,16 @@
 package startup
 
 import (
+	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/application"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/domain"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/api"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/persistence"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/startup/config"
 	"go.mongodb.org/mongo-driver/mongo"
+	"google.golang.org/grpc"
 	"log"
+	"net"
 )
 
 type Server struct {
@@ -41,13 +44,13 @@ func (server *Server) initMongoClient() *mongo.Client {
 
 func (server *Server) initCompanyStore(client *mongo.Client) domain.CompanyStore {
 	store := persistence.NewCompanyMongoDBStore(client)
-	//store.DeleteAll()
-	//for _, product := range products {
-	//	err := store.Insert(product)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//}
+	store.DeleteAll()
+	for _, product := range products {
+		err := store.Insert(product)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 	return store
 }
 
@@ -60,13 +63,13 @@ func (server *Server) initCompanyHandler(service *application.CompanyService) *a
 }
 
 func (server *Server) startGrpcServer(productHandler *api.CompanyHandler) {
-	//listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
-	//if err != nil {
-	//	log.Fatalf("failed to listen: %v", err)
-	//}
-	//grpcServer := grpc.NewServer()
-	//post.RegisterPostServiceServer(grpcServer, productHandler)
-	//if err := grpcServer.Serve(listener); err != nil {
-	//	log.Fatalf("failed to serve: %s", err)
-	//}
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	//post.RegisterCompanyServiceServer(grpcServer, productHandler)
+	if err := grpcServer.Serve(listener); err != nil {
+		log.Fatalf("failed to serve: %s", err)
+	}
 }

@@ -14,7 +14,7 @@ service CompanyService{
   }
   rpc GetAll(GetAllRequest) returns(GetAllResponse) {
     option (google.api.http) = {
-      get: "/company/"
+      get: "/company"
     };
   }
 }

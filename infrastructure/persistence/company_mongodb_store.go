@@ -17,7 +17,7 @@ type CompanyMongoDBStore struct {
 	companies *mongo.Collection
 }
 
-func NewCompanyMongoDBStore(client *mongo.Client) *CompanyMongoDBStore {
+func NewCompanyMongoDBStore(client *mongo.Client) domain.CompanyStore {
 	companies := client.Database(DATABASE).Collection(COLLECTION)
 	return &CompanyMongoDBStore{
 		companies: companies,
@@ -34,12 +34,12 @@ func (store *CompanyMongoDBStore) GetAll() ([]*domain.Company, error) {
 	return store.filter(filter)
 }
 
-func (store *CompanyMongoDBStore) Insert(product *domain.Company) error {
-	result, err := store.companies.InsertOne(context.TODO(), product)
+func (store *CompanyMongoDBStore) Insert(company *domain.Company) error {
+	result, err := store.companies.InsertOne(context.TODO(), company)
 	if err != nil {
 		return err
 	}
-	product.Id = result.InsertedID.(primitive.ObjectID)
+	company.Id = result.InsertedID.(primitive.ObjectID)
 	return nil
 }
 

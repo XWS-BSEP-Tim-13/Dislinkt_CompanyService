@@ -7,6 +7,6 @@ import (
 type CompanyStore interface {
 	Get(id primitive.ObjectID) (*Company, error)
 	GetAll() ([]*Company, error)
-	Insert(product *Company) error
+	Insert(company *Company) error
 	DeleteAll()
 }

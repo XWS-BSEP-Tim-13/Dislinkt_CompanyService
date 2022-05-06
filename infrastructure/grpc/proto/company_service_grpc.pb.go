@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type CompanyServiceClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	CreateCompany(ctx context.Context, in *NewCompany, opts ...grpc.CallOption) (*NewCompany, error)
 }
 
 type companyServiceClient struct {
@@ -52,12 +53,22 @@ func (c *companyServiceClient) GetAll(ctx context.Context, in *GetAllRequest, op
 	return out, nil
 }
 
+func (c *companyServiceClient) CreateCompany(ctx context.Context, in *NewCompany, opts ...grpc.CallOption) (*NewCompany, error) {
+	out := new(NewCompany)
+	err := c.cc.Invoke(ctx, "/company.CompanyService/CreateCompany", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CompanyServiceServer is the server API for CompanyService service.
 // All implementations must embed UnimplementedCompanyServiceServer
 // for forward compatibility
 type CompanyServiceServer interface {
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
+	CreateCompany(context.Context, *NewCompany) (*NewCompany, error)
 	mustEmbedUnimplementedCompanyServiceServer()
 }
 
@@ -70,6 +81,9 @@ func (UnimplementedCompanyServiceServer) Get(context.Context, *GetRequest) (*Get
 }
 func (UnimplementedCompanyServiceServer) GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
+}
+func (UnimplementedCompanyServiceServer) CreateCompany(context.Context, *NewCompany) (*NewCompany, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCompany not implemented")
 }
 func (UnimplementedCompanyServiceServer) mustEmbedUnimplementedCompanyServiceServer() {}
 
@@ -120,6 +134,24 @@ func _CompanyService_GetAll_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CompanyService_CreateCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewCompany)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).CreateCompany(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/company.CompanyService/CreateCompany",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).CreateCompany(ctx, req.(*NewCompany))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CompanyService_ServiceDesc is the grpc.ServiceDesc for CompanyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +166,10 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAll",
 			Handler:    _CompanyService_GetAll_Handler,
+		},
+		{
+			MethodName: "CreateCompany",
+			Handler:    _CompanyService_CreateCompany_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

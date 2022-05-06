@@ -28,7 +28,7 @@ func (handler *CompanyHandler) Get(ctx context.Context, request *pb.GetRequest) 
 	if err != nil {
 		return nil, err
 	}
-	companyPb := mapCompany(company)
+	companyPb := mapCompanyDomainToPb(company)
 	response := &pb.GetResponse{
 		Company: companyPb,
 	}
@@ -44,7 +44,7 @@ func (handler *CompanyHandler) GetAll(ctx context.Context, request *pb.GetAllReq
 		Companies: []*pb.Company{},
 	}
 	for _, company := range companies {
-		current := mapCompany(company)
+		current := mapCompanyDomainToPb(company)
 		response.Companies = append(response.Companies, current)
 	}
 	return response, nil

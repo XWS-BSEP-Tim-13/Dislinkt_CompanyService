@@ -14,7 +14,6 @@ type Company struct {
 	Website     string             `bson:"website"`
 	CompanySize string             `bson:"company_size"`
 	Industry    string             `bson:"industry"`
-	JobOffers   []JobOffer         `bson:"job_offers"`
 }
 
 type JobOffer struct {

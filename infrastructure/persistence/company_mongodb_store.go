@@ -34,6 +34,11 @@ func (store *CompanyMongoDBStore) GetAll() ([]*domain.Company, error) {
 	return store.filter(filter)
 }
 
+func (store *CompanyMongoDBStore) GetByUsername(username string) (*domain.Company, error) {
+	filter := bson.M{"username": username}
+	return store.filterOne(filter)
+}
+
 func (store *CompanyMongoDBStore) Insert(company *domain.Company) error {
 	result, err := store.companies.InsertOne(context.TODO(), company)
 	if err != nil {

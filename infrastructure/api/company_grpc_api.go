@@ -2,9 +2,11 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/application"
 	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/grpc/proto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/grpc/status"
 )
 
 type CompanyHandler struct {
@@ -16,6 +18,23 @@ func NewCompanyHandler(service *application.CompanyService) *CompanyHandler {
 	return &CompanyHandler{
 		service: service,
 	}
+}
+
+func (handler *CompanyHandler) CreateCompany(ctx context.Context, request *pb.NewCompany) (*pb.NewCompany, error) {
+	fmt.Println((*request).Company)
+	company := mapCompanyPbToDomain(request.Company)
+	fmt.Println(company)
+
+	newCompany, err := handler.service.CreateNewCompany(company)
+	if err != nil {
+		return nil, status.Error(400, err.Error())
+	}
+
+	response := &pb.NewCompany{
+		Company: mapCompanyDomainToPb(newCompany),
+	}
+
+	return response, nil
 }
 
 func (handler *CompanyHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {

@@ -23,6 +23,8 @@ func mapCompanyPbToDomain(companyPb *pb.Company) *domain.Company {
 	company := &domain.Company{
 		CompanyName: companyPb.CompanyName,
 		Username:    companyPb.Username,
+		Email:       companyPb.Email,
+		PhoneNumber: companyPb.PhoneNumber,
 		Description: companyPb.Description,
 		Location:    companyPb.Location,
 		Website:     companyPb.Website,

@@ -5,25 +5,32 @@ import (
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/application"
 	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/grpc/proto"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/util"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/status"
 )
 
 type CompanyHandler struct {
 	pb.UnimplementedCompanyServiceServer
-	service *application.CompanyService
+	service     *application.CompanyService
+	goValidator *util.GoValidator
 }
 
-func NewCompanyHandler(service *application.CompanyService) *CompanyHandler {
+func NewCompanyHandler(service *application.CompanyService, goValidator *util.GoValidator) *CompanyHandler {
 	return &CompanyHandler{
-		service: service,
+		service:     service,
+		goValidator: goValidator,
 	}
 }
 
 func (handler *CompanyHandler) CreateCompany(ctx context.Context, request *pb.NewCompany) (*pb.NewCompany, error) {
-	fmt.Println((*request).Company)
 	company := mapCompanyPbToDomain(request.Company)
 	fmt.Println(company)
+
+	err := handler.goValidator.Validator.Struct(company)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
 
 	newCompany, err := handler.service.CreateNewCompany(company)
 	if err != nil {

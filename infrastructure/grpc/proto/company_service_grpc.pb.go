@@ -37,7 +37,7 @@ func NewCompanyServiceClient(cc grpc.ClientConnInterface) CompanyServiceClient {
 
 func (c *companyServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
 	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/company.CompanyService/GetActiveById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/company.CompanyService/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (c *companyServiceClient) Get(ctx context.Context, in *GetRequest, opts ...
 
 func (c *companyServiceClient) GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	out := new(GetAllResponse)
-	err := c.cc.Invoke(ctx, "/company.CompanyService/GetAllActive", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/company.CompanyService/GetAll", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,10 +77,10 @@ type UnimplementedCompanyServiceServer struct {
 }
 
 func (UnimplementedCompanyServiceServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetActiveById not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedCompanyServiceServer) GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllActive not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
 func (UnimplementedCompanyServiceServer) CreateCompany(context.Context, *NewCompany) (*NewCompany, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCompany not implemented")
@@ -108,7 +108,7 @@ func _CompanyService_Get_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/company.CompanyService/GetActiveById",
+		FullMethod: "/company.CompanyService/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CompanyServiceServer).Get(ctx, req.(*GetRequest))
@@ -126,7 +126,7 @@ func _CompanyService_GetAll_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/company.CompanyService/GetAllActive",
+		FullMethod: "/company.CompanyService/GetAll",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CompanyServiceServer).GetAll(ctx, req.(*GetAllRequest))
@@ -160,11 +160,11 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*CompanyServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetActiveById",
+			MethodName: "Get",
 			Handler:    _CompanyService_Get_Handler,
 		},
 		{
-			MethodName: "GetAllActive",
+			MethodName: "GetAll",
 			Handler:    _CompanyService_GetAll_Handler,
 		},
 		{

@@ -45,11 +45,12 @@ message Company {
   string companyName = 2;
   string username = 3;
   string email = 4;
-  string description = 5;
-  string location = 6;
-  string website = 7;
-  string companySize = 8;
-  string industry = 9;
+  string phoneNumber = 5;
+  string description = 6;
+  string location = 7;
+  string website = 8;
+  string companySize = 9;
+  string industry = 10;
 }
 
 message JobOffer {

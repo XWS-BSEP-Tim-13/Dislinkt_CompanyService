@@ -114,7 +114,7 @@ func RegisterCompanyServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.CompanyService/GetActiveById", runtime.WithHTTPPathPattern("/company/{id}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.CompanyService/Get", runtime.WithHTTPPathPattern("/company/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -138,7 +138,7 @@ func RegisterCompanyServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.CompanyService/GetAllActive", runtime.WithHTTPPathPattern("/company"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.CompanyService/GetAll", runtime.WithHTTPPathPattern("/company"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -201,7 +201,7 @@ func RegisterCompanyServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.CompanyService/GetActiveById", runtime.WithHTTPPathPattern("/company/{id}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.CompanyService/Get", runtime.WithHTTPPathPattern("/company/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -222,7 +222,7 @@ func RegisterCompanyServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.CompanyService/GetAllActive", runtime.WithHTTPPathPattern("/company"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.CompanyService/GetAll", runtime.WithHTTPPathPattern("/company"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

@@ -8,6 +8,7 @@ import (
 	company "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/grpc/proto"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/persistence"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/startup/config"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/util"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"log"
@@ -29,8 +30,9 @@ func (server *Server) Start() {
 	companyStore := server.initCompanyStore(mongoClient)
 
 	companyService := server.initCompanyService(companyStore)
+	goValidator := server.initGoValidator()
 
-	companyHandler := server.initCompanyHandler(companyService)
+	companyHandler := server.initCompanyHandler(companyService, goValidator)
 
 	server.startGrpcServer(companyHandler)
 }
@@ -59,8 +61,12 @@ func (server *Server) initCompanyService(store domain.CompanyStore) *application
 	return application.NewCompanyService(store)
 }
 
-func (server *Server) initCompanyHandler(service *application.CompanyService) *api.CompanyHandler {
-	return api.NewCompanyHandler(service)
+func (server *Server) initGoValidator() *util.GoValidator {
+	return util.NewGoValidator()
+}
+
+func (server *Server) initCompanyHandler(service *application.CompanyService, goValidator *util.GoValidator) *api.CompanyHandler {
+	return api.NewCompanyHandler(service, goValidator)
 }
 
 func (server *Server) startGrpcServer(productHandler *api.CompanyHandler) {

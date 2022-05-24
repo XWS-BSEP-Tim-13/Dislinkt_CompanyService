@@ -15,6 +15,7 @@ var companies = []*domain.Company{
 		Website:     "www.levi9.com",
 		CompanySize: "1000",
 		Industry:    "IT",
+		IsActive:    true,
 	},
 }
 

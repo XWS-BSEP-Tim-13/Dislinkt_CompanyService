@@ -24,18 +24,28 @@ func NewCompanyMongoDBStore(client *mongo.Client) domain.CompanyStore {
 	}
 }
 
-func (store *CompanyMongoDBStore) Get(id primitive.ObjectID) (*domain.Company, error) {
-	filter := bson.M{"_id": id}
+func (store *CompanyMongoDBStore) GetActiveById(id primitive.ObjectID) (*domain.Company, error) {
+	filter := bson.M{"_id": id, "is_active": true}
 	return store.filterOne(filter)
 }
 
-func (store *CompanyMongoDBStore) GetAll() ([]*domain.Company, error) {
-	filter := bson.D{{}}
+func (store *CompanyMongoDBStore) GetAllActive() ([]*domain.Company, error) {
+	filter := bson.D{{"is_active", "true"}}
 	return store.filter(filter)
+}
+
+func (store *CompanyMongoDBStore) GetActiveByUsername(username string) (*domain.Company, error) {
+	filter := bson.M{"username": username, "is_active": true}
+	return store.filterOne(filter)
 }
 
 func (store *CompanyMongoDBStore) GetByUsername(username string) (*domain.Company, error) {
 	filter := bson.M{"username": username}
+	return store.filterOne(filter)
+}
+
+func (store *CompanyMongoDBStore) GetByEmail(email string) (*domain.Company, error) {
+	filter := bson.M{"email": email}
 	return store.filterOne(filter)
 }
 

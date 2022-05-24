@@ -526,11 +526,11 @@ var file_company_service_proto_depIdxs = []int32{
 	5, // 1: company.GetAllResponse.companies:type_name -> company.Company
 	5, // 2: company.NewCompany.company:type_name -> company.Company
 	5, // 3: company.JobOffer.company:type_name -> company.Company
-	0, // 4: company.CompanyService.Get:input_type -> company.GetRequest
-	2, // 5: company.CompanyService.GetAll:input_type -> company.GetAllRequest
+	0, // 4: company.CompanyService.GetActiveById:input_type -> company.GetRequest
+	2, // 5: company.CompanyService.GetAllActive:input_type -> company.GetAllRequest
 	4, // 6: company.CompanyService.CreateCompany:input_type -> company.NewCompany
-	1, // 7: company.CompanyService.Get:output_type -> company.GetResponse
-	3, // 8: company.CompanyService.GetAll:output_type -> company.GetAllResponse
+	1, // 7: company.CompanyService.GetActiveById:output_type -> company.GetResponse
+	3, // 8: company.CompanyService.GetAllActive:output_type -> company.GetAllResponse
 	4, // 9: company.CompanyService.CreateCompany:output_type -> company.NewCompany
 	7, // [7:10] is the sub-list for method output_type
 	4, // [4:7] is the sub-list for method input_type

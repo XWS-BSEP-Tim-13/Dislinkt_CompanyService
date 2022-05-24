@@ -17,11 +17,11 @@ func NewCompanyService(store domain.CompanyStore) *CompanyService {
 }
 
 func (service *CompanyService) Get(id primitive.ObjectID) (*domain.Company, error) {
-	return service.store.Get(id)
+	return service.store.GetActiveById(id)
 }
 
 func (service *CompanyService) GetAll() ([]*domain.Company, error) {
-	return service.store.GetAll()
+	return service.store.GetAllActive()
 }
 
 func (service *CompanyService) CreateNewCompany(company *domain.Company) (*domain.Company, error) {
@@ -30,7 +30,15 @@ func (service *CompanyService) CreateNewCompany(company *domain.Company) (*domai
 		err := errors.New("username already exists")
 		return nil, err
 	}
+
+	dbCompany, _ = service.store.GetByUsername((*company).Username)
+	if dbCompany != nil {
+		err := errors.New("email already exists")
+		return nil, err
+	}
+
 	(*company).Id = primitive.NewObjectID()
+	(*company).IsActive = false
 	err := service.store.Insert(company)
 	if err != nil {
 		err := errors.New("error while creating new company")

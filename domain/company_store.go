@@ -5,9 +5,11 @@ import (
 )
 
 type CompanyStore interface {
-	Get(id primitive.ObjectID) (*Company, error)
-	GetAll() ([]*Company, error)
+	GetActiveById(id primitive.ObjectID) (*Company, error)
+	GetAllActive() ([]*Company, error)
+	GetActiveByUsername(username string) (*Company, error)
 	GetByUsername(username string) (*Company, error)
+	GetByEmail(email string) (*Company, error)
 	Insert(company *Company) error
 	DeleteAll()
 }

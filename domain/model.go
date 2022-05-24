@@ -9,11 +9,13 @@ type Company struct {
 	Id          primitive.ObjectID `bson:"_id"`
 	CompanyName string             `bson:"company_name"`
 	Username    string             `bson:"username"`
+	Email       string             `bson:"email"`
 	Description string             `bson:"description"`
 	Location    string             `bson:"location"`
 	Website     string             `bson:"website"`
 	CompanySize string             `bson:"company_size"`
 	Industry    string             `bson:"industry"`
+	IsActive    bool               `bson:"is_active"`
 }
 
 type JobOffer struct {

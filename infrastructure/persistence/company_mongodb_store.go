@@ -58,6 +58,15 @@ func (store *CompanyMongoDBStore) Insert(company *domain.Company) error {
 	return nil
 }
 
+func (store *CompanyMongoDBStore) UpdateIsActive(email string) error {
+	_, err := store.companies.UpdateOne(
+		context.TODO(),
+		bson.M{"email": email},
+		bson.D{{"$set", bson.D{{"is_active", true}}}},
+	)
+	return err
+}
+
 func (store *CompanyMongoDBStore) DeleteAll() {
 	store.companies.DeleteMany(context.TODO(), bson.D{{}})
 }

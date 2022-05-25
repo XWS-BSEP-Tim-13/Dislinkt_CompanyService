@@ -44,6 +44,21 @@ func (handler *CompanyHandler) CreateCompany(ctx context.Context, request *pb.Ne
 	return response, nil
 }
 
+func (handler *CompanyHandler) ActivateAccount(ctx context.Context, request *pb.ActivateAccountRequest) (*pb.ActivateAccountResponse, error) {
+	email := request.Email
+
+	resp, err := handler.service.ActivateAccount(email)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+
+	response := &pb.ActivateAccountResponse{
+		Message: resp,
+	}
+
+	return response, nil
+}
+
 func (handler *CompanyHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
 	id := request.Id
 	objectId, err := primitive.ObjectIDFromHex(id)

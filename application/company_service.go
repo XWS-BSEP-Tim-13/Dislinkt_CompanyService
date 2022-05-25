@@ -47,3 +47,13 @@ func (service *CompanyService) CreateNewCompany(company *domain.Company) (*domai
 
 	return company, nil
 }
+
+func (service *CompanyService) ActivateAccount(email string) (string, error) {
+	err := service.store.UpdateIsActive(email)
+	if err != nil {
+		err := errors.New("error activating account")
+		return "", err
+	}
+
+	return "Account successfully activated!", nil
+}

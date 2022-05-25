@@ -19,6 +19,8 @@ service CompanyService{
   }
   
   rpc CreateCompany(NewCompany) returns (NewCompany) {}
+
+  rpc ActivateAccount(ActivateAccountRequest) returns(ActivateAccountResponse){}
 }
 
 message GetRequest {
@@ -59,4 +61,12 @@ message JobOffer {
   string jobDescription = 3;
   string prerequisites = 4;
   Company company = 5;
+}
+
+message ActivateAccountRequest {
+  string email = 1;
+}
+
+message ActivateAccountResponse {
+  string message = 1;
 }

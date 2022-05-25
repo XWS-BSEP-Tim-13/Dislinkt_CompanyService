@@ -12,4 +12,5 @@ type CompanyStore interface {
 	GetByEmail(email string) (*Company, error)
 	Insert(company *Company) error
 	DeleteAll()
+	UpdateIsActive(email string) error
 }

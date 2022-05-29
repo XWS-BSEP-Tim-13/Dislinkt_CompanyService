@@ -27,6 +27,7 @@ type CompanyServiceClient interface {
 	CreateCompany(ctx context.Context, in *NewCompany, opts ...grpc.CallOption) (*NewCompany, error)
 	ActivateAccount(ctx context.Context, in *ActivateAccountRequest, opts ...grpc.CallOption) (*ActivateAccountResponse, error)
 	CreateJobOffer(ctx context.Context, in *JobOfferRequest, opts ...grpc.CallOption) (*JobOfferResponse, error)
+	GetJobOffers(ctx context.Context, in *EmptyMessage, opts ...grpc.CallOption) (*GetAllJobsResponse, error)
 }
 
 type companyServiceClient struct {
@@ -82,6 +83,15 @@ func (c *companyServiceClient) CreateJobOffer(ctx context.Context, in *JobOfferR
 	return out, nil
 }
 
+func (c *companyServiceClient) GetJobOffers(ctx context.Context, in *EmptyMessage, opts ...grpc.CallOption) (*GetAllJobsResponse, error) {
+	out := new(GetAllJobsResponse)
+	err := c.cc.Invoke(ctx, "/company.CompanyService/GetJobOffers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CompanyServiceServer is the server API for CompanyService service.
 // All implementations must embed UnimplementedCompanyServiceServer
 // for forward compatibility
@@ -91,6 +101,7 @@ type CompanyServiceServer interface {
 	CreateCompany(context.Context, *NewCompany) (*NewCompany, error)
 	ActivateAccount(context.Context, *ActivateAccountRequest) (*ActivateAccountResponse, error)
 	CreateJobOffer(context.Context, *JobOfferRequest) (*JobOfferResponse, error)
+	GetJobOffers(context.Context, *EmptyMessage) (*GetAllJobsResponse, error)
 	mustEmbedUnimplementedCompanyServiceServer()
 }
 
@@ -112,6 +123,9 @@ func (UnimplementedCompanyServiceServer) ActivateAccount(context.Context, *Activ
 }
 func (UnimplementedCompanyServiceServer) CreateJobOffer(context.Context, *JobOfferRequest) (*JobOfferResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateJobOffer not implemented")
+}
+func (UnimplementedCompanyServiceServer) GetJobOffers(context.Context, *EmptyMessage) (*GetAllJobsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetJobOffers not implemented")
 }
 func (UnimplementedCompanyServiceServer) mustEmbedUnimplementedCompanyServiceServer() {}
 
@@ -216,6 +230,24 @@ func _CompanyService_CreateJobOffer_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CompanyService_GetJobOffers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmptyMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).GetJobOffers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/company.CompanyService/GetJobOffers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).GetJobOffers(ctx, req.(*EmptyMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CompanyService_ServiceDesc is the grpc.ServiceDesc for CompanyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -242,6 +274,10 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateJobOffer",
 			Handler:    _CompanyService_CreateJobOffer_Handler,
+		},
+		{
+			MethodName: "GetJobOffers",
+			Handler:    _CompanyService_GetJobOffers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

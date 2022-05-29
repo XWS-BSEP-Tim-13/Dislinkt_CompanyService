@@ -56,6 +56,21 @@ func (handler *CompanyHandler) CreateJobOffer(ctx context.Context, request *pb.J
 	return response, nil
 }
 
+func (handler *CompanyHandler) GetAllJobs(ctx context.Context, request *pb.EmptyMessage) (*pb.GetAllJobsResponse, error) {
+	resp, err := handler.service.GetAllJobs()
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+	response := &pb.GetAllJobsResponse{
+		Jobs: []*pb.JobOffer{},
+	}
+	for _, job := range resp {
+		current := mapJobDomainToPb(job)
+		response.Jobs = append(response.Jobs, current)
+	}
+	return response, nil
+}
+
 func (handler *CompanyHandler) ActivateAccount(ctx context.Context, request *pb.ActivateAccountRequest) (*pb.ActivateAccountResponse, error) {
 	email := request.Email
 

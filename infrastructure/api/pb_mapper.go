@@ -43,6 +43,27 @@ func mapJobOfferDtoToDomain(jobOfferDto *pb.JobOfferDto) *domain.JobOffer {
 	return jobOffer
 }
 
+func mapJobDomainToPb(job *domain.JobOffer) *pb.JobOffer {
+	jobPb := &pb.JobOffer{
+		Id:             job.Id.Hex(),
+		JobDescription: job.JobDescription,
+		Position:       job.Position,
+		Prerequisites:  job.Prerequisites,
+		EmploymentType: pb.EmploymentType(job.EmploymentType),
+		Company: &pb.Company{
+			Id:          job.Company.Id.Hex(),
+			CompanyName: job.Company.CompanyName,
+			Username:    job.Company.Username,
+			Description: job.Company.Description,
+			Location:    job.Company.Location,
+			Website:     job.Company.Website,
+			CompanySize: job.Company.CompanySize,
+			Industry:    job.Company.Industry,
+		},
+	}
+	return jobPb
+}
+
 func mapCompanyPbToDomain(companyPb *pb.Company) *domain.Company {
 	company := &domain.Company{
 		CompanyName: companyPb.CompanyName,

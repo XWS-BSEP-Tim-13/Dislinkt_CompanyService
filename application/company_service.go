@@ -54,6 +54,10 @@ func (service *CompanyService) InsertJobOffer(job *domain.JobOffer) error {
 	return service.jobStore.Insert(job)
 }
 
+func (service *CompanyService) GetAllJobs() ([]*domain.JobOffer, error) {
+	return service.jobStore.GetAllActive()
+}
+
 func (service *CompanyService) ActivateAccount(email string) (string, error) {
 	err := service.store.UpdateIsActive(email)
 	if err != nil {

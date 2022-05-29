@@ -67,3 +67,7 @@ func (service *CompanyService) ActivateAccount(email string) (string, error) {
 
 	return "Account successfully activated!", nil
 }
+
+func (service *CompanyService) FilterJobs(filter *domain.JobFilter) ([]*domain.JobOffer, error) {
+	return service.jobStore.FilterJobs(filter)
+}

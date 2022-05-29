@@ -56,7 +56,25 @@ func (handler *CompanyHandler) CreateJobOffer(ctx context.Context, request *pb.J
 	return response, nil
 }
 
-func (handler *CompanyHandler) GetAllJobs(ctx context.Context, request *pb.EmptyMessage) (*pb.GetAllJobsResponse, error) {
+func (handler *CompanyHandler) FilterJobOffers(ctx context.Context, request *pb.FilterJobsRequest) (*pb.GetAllJobsResponse, error) {
+	filter := mapPbFilterToDomain(request.Filter)
+	jobs, err := handler.service.FilterJobs(filter)
+	if err != nil {
+		return nil, status.Error(400, err.Error())
+	}
+	response := &pb.GetAllJobsResponse{
+		Jobs: []*pb.JobOffer{},
+	}
+
+	for _, job := range jobs {
+		current := mapJobDomainToPb(job)
+		response.Jobs = append(response.Jobs, current)
+	}
+	return response, nil
+}
+
+func (handler *CompanyHandler) GetJobOffers(ctx context.Context, request *pb.EmptyMessage) (*pb.GetAllJobsResponse, error) {
+	fmt.Println("Request started")
 	resp, err := handler.service.GetAllJobs()
 	if err != nil {
 		return nil, status.Error(500, err.Error())
@@ -64,6 +82,7 @@ func (handler *CompanyHandler) GetAllJobs(ctx context.Context, request *pb.Empty
 	response := &pb.GetAllJobsResponse{
 		Jobs: []*pb.JobOffer{},
 	}
+
 	for _, job := range resp {
 		current := mapJobDomainToPb(job)
 		response.Jobs = append(response.Jobs, current)

@@ -3,6 +3,7 @@ package startup
 import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 var companies = []*domain.Company{
@@ -38,6 +39,7 @@ var jobs = []*domain.JobOffer{
 		Prerequisites:  "2 years of expirience.",
 		Company:        *companies[0],
 		JobDescription: "Great expirience for self development and work with experts",
+		Published:      time.Now(),
 	},
 }
 

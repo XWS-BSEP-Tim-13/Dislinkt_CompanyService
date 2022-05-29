@@ -5,6 +5,7 @@ import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/domain/enum"
 	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/grpc/proto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 func mapCompanyDomainToPb(company *domain.Company) *pb.Company {
@@ -39,8 +40,19 @@ func mapJobOfferDtoToDomain(jobOfferDto *pb.JobOfferDto) *domain.JobOffer {
 		Position:       jobOfferDto.Position,
 		Prerequisites:  jobOfferDto.Prerequisites,
 		EmploymentType: enum.EmploymentType(jobOfferDto.EmploymentType),
+		Published:      time.Now(),
 	}
 	return jobOffer
+}
+
+func mapPbFilterToDomain(filter *pb.FilterBody) *domain.JobFilter {
+	filterDomain := &domain.JobFilter{
+		Company:        filter.CompanyId,
+		EmploymentType: enum.EmploymentType(filter.Type),
+		SortDate:       enum.DateSort(filter.Date),
+		Position:       filter.Position,
+	}
+	return filterDomain
 }
 
 func mapJobDomainToPb(job *domain.JobOffer) *pb.JobOffer {

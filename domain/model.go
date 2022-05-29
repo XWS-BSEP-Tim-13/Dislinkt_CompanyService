@@ -3,6 +3,7 @@ package domain
 import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/domain/enum"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 type Company struct {
@@ -26,4 +27,5 @@ type JobOffer struct {
 	Prerequisites  string              `bson:"prerequisites"`
 	Company        Company             `bson:"company"`
 	EmploymentType enum.EmploymentType `bson:"employment_type"`
+	Published      time.Time           `bson:"published" validate:"required"`
 }

@@ -6,4 +6,5 @@ const (
 	FULL_TIME EmploymentType = iota
 	PART_TIME
 	INTERNSHIP
+	NONE
 )

@@ -6,6 +6,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"strconv"
 )
 
 const (
@@ -15,6 +17,41 @@ const (
 
 type JobOfferMongoDBStore struct {
 	jobs *mongo.Collection
+}
+
+func (store JobOfferMongoDBStore) FilterJobs(filter *domain.JobFilter) ([]*domain.JobOffer, error) {
+	empType := bson.M{}
+	position := bson.M{"position": filter.Position}
+	company := bson.M{}
+	findOptions := options.Find()
+	findOptions.SetSort(bson.D{{"likes", -1}, {"date", -1}})
+	if filter.SortDate == 0 {
+		findOptions.SetSort(bson.D{{"published", -1}})
+	}
+	if filter.SortDate == 1 {
+		findOptions.SetSort(bson.D{{"published", 1}})
+	}
+	if filter.EmploymentType != 3 {
+		empType = bson.M{"employment_type": filter.EmploymentType}
+	}
+	compId, _ := strconv.Atoi(filter.Company)
+	if compId != -1 {
+		company = bson.M{"company._id": filter.Company}
+	}
+
+	filterr := bson.M{
+		"$and": []bson.M{
+			empType,
+			position,
+			company,
+		},
+	}
+	cursor, err := store.jobs.Find(context.TODO(), filterr, findOptions)
+	if err != nil {
+		return nil, err
+	}
+	jobs, _ := decodeJobs(cursor)
+	return jobs, nil
 }
 
 func NewJobOfferMongoDBStore(client *mongo.Client) domain.JobOfferStore {

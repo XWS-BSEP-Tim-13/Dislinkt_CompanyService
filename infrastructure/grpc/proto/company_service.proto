@@ -33,6 +33,23 @@ service CompanyService{
       get: "/company/job-offer"
     };
   }
+  rpc FilterJobOffers(FilterJobsRequest) returns(GetAllJobsResponse){
+    option (google.api.http) = {
+      post: "/company/job-offer/filter"
+      body: "filter"
+    };
+  }
+}
+
+message FilterJobsRequest{
+    FilterBody filter=1;
+}
+
+message FilterBody{
+    SortDate date=1;
+    EmploymentType type =2;
+    string companyId =3;
+    string position =4;
 }
 
 message EmptyMessage{}
@@ -109,8 +126,15 @@ enum ReactionType {
   DISLIKE = 1;
 }
 
+enum SortDate{
+  LATEST = 0;
+  OLDEST = 1;
+  NONE_DATE =2;
+}
+
 enum EmploymentType {
   FULL_TIME = 0;
   PART_TIME = 1;
   INTERNSHIP = 2;
+  NONE = 3;
 }

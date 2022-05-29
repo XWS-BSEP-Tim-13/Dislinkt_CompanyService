@@ -7,4 +7,5 @@ type JobOfferStore interface {
 	GetAllActive() ([]*JobOffer, error)
 	Insert(jobOffer *JobOffer) error
 	DeleteAll()
+	FilterJobs(filter *JobFilter) ([]*JobOffer, error)
 }

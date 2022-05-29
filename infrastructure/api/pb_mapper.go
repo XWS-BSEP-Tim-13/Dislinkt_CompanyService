@@ -2,7 +2,9 @@ package api
 
 import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/domain"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/domain/enum"
 	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/grpc/proto"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func mapCompanyDomainToPb(company *domain.Company) *pb.Company {
@@ -17,6 +19,28 @@ func mapCompanyDomainToPb(company *domain.Company) *pb.Company {
 		Industry:    company.Industry,
 	}
 	return companyPb
+}
+
+func mapJobOfferDtoToDomain(jobOfferDto *pb.JobOfferDto) *domain.JobOffer {
+	jobOffer := &domain.JobOffer{
+		Id: primitive.NewObjectID(),
+		Company: domain.Company{
+			CompanyName: jobOfferDto.Company.CompanyName,
+			Username:    jobOfferDto.Company.Username,
+			Email:       jobOfferDto.Company.Email,
+			PhoneNumber: jobOfferDto.Company.PhoneNumber,
+			Description: jobOfferDto.Company.Description,
+			Location:    jobOfferDto.Company.Location,
+			Website:     jobOfferDto.Company.Website,
+			CompanySize: jobOfferDto.Company.CompanySize,
+			Industry:    jobOfferDto.Company.Industry,
+		},
+		JobDescription: jobOfferDto.JobDescription,
+		Position:       jobOfferDto.Position,
+		Prerequisites:  jobOfferDto.Prerequisites,
+		EmploymentType: enum.EmploymentType(jobOfferDto.EmploymentType),
+	}
+	return jobOffer
 }
 
 func mapCompanyPbToDomain(companyPb *pb.Company) *domain.Company {

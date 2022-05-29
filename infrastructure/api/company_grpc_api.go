@@ -44,6 +44,18 @@ func (handler *CompanyHandler) CreateCompany(ctx context.Context, request *pb.Ne
 	return response, nil
 }
 
+func (handler *CompanyHandler) CreateJobOffer(ctx context.Context, request *pb.JobOfferRequest) (*pb.JobOfferResponse, error) {
+	job := mapJobOfferDtoToDomain(request.Dto)
+	err := handler.service.InsertJobOffer(job)
+	if err != nil {
+		return nil, status.Error(400, err.Error())
+	}
+	response := &pb.JobOfferResponse{
+		Id: primitive.ObjectID.String(job.Id),
+	}
+	return response, nil
+}
+
 func (handler *CompanyHandler) ActivateAccount(ctx context.Context, request *pb.ActivateAccountRequest) (*pb.ActivateAccountResponse, error) {
 	email := request.Email
 

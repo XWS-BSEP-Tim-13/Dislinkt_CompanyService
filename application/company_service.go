@@ -7,12 +7,14 @@ import (
 )
 
 type CompanyService struct {
-	store domain.CompanyStore
+	store    domain.CompanyStore
+	jobStore domain.JobOfferStore
 }
 
-func NewCompanyService(store domain.CompanyStore) *CompanyService {
+func NewCompanyService(store domain.CompanyStore, jobStore domain.JobOfferStore) *CompanyService {
 	return &CompanyService{
-		store: store,
+		store:    store,
+		jobStore: jobStore,
 	}
 }
 
@@ -46,6 +48,10 @@ func (service *CompanyService) CreateNewCompany(company *domain.Company) (*domai
 	}
 
 	return company, nil
+}
+
+func (service *CompanyService) InsertJobOffer(job *domain.JobOffer) error {
+	return service.jobStore.Insert(job)
 }
 
 func (service *CompanyService) ActivateAccount(email string) (string, error) {

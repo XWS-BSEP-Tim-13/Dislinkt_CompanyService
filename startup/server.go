@@ -28,8 +28,8 @@ func NewServer(config *config.Config) *Server {
 func (server *Server) Start() {
 	mongoClient := server.initMongoClient()
 	companyStore := server.initCompanyStore(mongoClient)
-
-	companyService := server.initCompanyService(companyStore)
+	jobsStore := server.initJobsStore(mongoClient)
+	companyService := server.initCompanyService(companyStore, jobsStore)
 	goValidator := server.initGoValidator()
 
 	companyHandler := server.initCompanyHandler(companyService, goValidator)
@@ -57,8 +57,20 @@ func (server *Server) initCompanyStore(client *mongo.Client) domain.CompanyStore
 	return store
 }
 
-func (server *Server) initCompanyService(store domain.CompanyStore) *application.CompanyService {
-	return application.NewCompanyService(store)
+func (server *Server) initJobsStore(client *mongo.Client) domain.JobOfferStore {
+	store := persistence.NewJobOfferMongoDBStore(client)
+	store.DeleteAll()
+	for _, job := range jobs {
+		err := store.Insert(job)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return store
+}
+
+func (server *Server) initCompanyService(store domain.CompanyStore, jobStore domain.JobOfferStore) *application.CompanyService {
+	return application.NewCompanyService(store, jobStore)
 }
 
 func (server *Server) initGoValidator() *util.GoValidator {

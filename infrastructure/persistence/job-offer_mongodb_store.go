@@ -21,7 +21,7 @@ type JobOfferMongoDBStore struct {
 
 func (store JobOfferMongoDBStore) FilterJobs(filter *domain.JobFilter) ([]*domain.JobOffer, error) {
 	empType := bson.M{}
-	position := bson.M{"position": filter.Position}
+	position := bson.M{"position": primitive.Regex{Pattern: filter.Position, Options: "i"}}
 	company := bson.M{}
 	findOptions := options.Find()
 	findOptions.SetSort(bson.D{{"likes", -1}, {"date", -1}})

@@ -5,6 +5,7 @@ option go_package = "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastr
 package company;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
 service CompanyService{
   rpc Get(GetRequest) returns(GetResponse) {
@@ -111,6 +112,7 @@ message JobOffer {
   string prerequisites = 4;
   Company company = 5;
   EmploymentType employment_type=6;
+  google.protobuf.Timestamp published =7;
 }
 
 message ActivateAccountRequest {

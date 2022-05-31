@@ -28,7 +28,7 @@ type CompanyServiceClient interface {
 	ActivateAccount(ctx context.Context, in *ActivateAccountRequest, opts ...grpc.CallOption) (*ActivateAccountResponse, error)
 	CreateJobOffer(ctx context.Context, in *JobOfferRequest, opts ...grpc.CallOption) (*JobOfferResponse, error)
 	GetJobOffers(ctx context.Context, in *EmptyMessage, opts ...grpc.CallOption) (*GetAllJobsResponse, error)
-	FilterJobOffers(ctx context.Context, in *FilterJobsRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	FilterJobOffers(ctx context.Context, in *FilterJobsRequest, opts ...grpc.CallOption) (*GetAllJobsResponse, error)
 }
 
 type companyServiceClient struct {
@@ -93,8 +93,8 @@ func (c *companyServiceClient) GetJobOffers(ctx context.Context, in *EmptyMessag
 	return out, nil
 }
 
-func (c *companyServiceClient) FilterJobOffers(ctx context.Context, in *FilterJobsRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
-	out := new(GetAllResponse)
+func (c *companyServiceClient) FilterJobOffers(ctx context.Context, in *FilterJobsRequest, opts ...grpc.CallOption) (*GetAllJobsResponse, error) {
+	out := new(GetAllJobsResponse)
 	err := c.cc.Invoke(ctx, "/company.CompanyService/FilterJobOffers", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ type CompanyServiceServer interface {
 	ActivateAccount(context.Context, *ActivateAccountRequest) (*ActivateAccountResponse, error)
 	CreateJobOffer(context.Context, *JobOfferRequest) (*JobOfferResponse, error)
 	GetJobOffers(context.Context, *EmptyMessage) (*GetAllJobsResponse, error)
-	FilterJobOffers(context.Context, *FilterJobsRequest) (*GetAllResponse, error)
+	FilterJobOffers(context.Context, *FilterJobsRequest) (*GetAllJobsResponse, error)
 	mustEmbedUnimplementedCompanyServiceServer()
 }
 
@@ -138,7 +138,7 @@ func (UnimplementedCompanyServiceServer) CreateJobOffer(context.Context, *JobOff
 func (UnimplementedCompanyServiceServer) GetJobOffers(context.Context, *EmptyMessage) (*GetAllJobsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJobOffers not implemented")
 }
-func (UnimplementedCompanyServiceServer) FilterJobOffers(context.Context, *FilterJobsRequest) (*GetAllResponse, error) {
+func (UnimplementedCompanyServiceServer) FilterJobOffers(context.Context, *FilterJobsRequest) (*GetAllJobsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FilterJobOffers not implemented")
 }
 func (UnimplementedCompanyServiceServer) mustEmbedUnimplementedCompanyServiceServer() {}

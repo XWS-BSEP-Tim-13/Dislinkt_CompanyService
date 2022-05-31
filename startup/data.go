@@ -39,7 +39,7 @@ var jobs = []*domain.JobOffer{
 		Prerequisites:  "2 years of expirience.",
 		Company:        *companies[0],
 		JobDescription: "Great expirience for self development and work with experts",
-		Published:      time.Now(),
+		Published:      time.Now().Add(24 * time.Hour),
 	},
 }
 

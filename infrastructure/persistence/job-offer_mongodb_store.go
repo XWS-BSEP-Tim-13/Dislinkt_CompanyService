@@ -31,13 +31,11 @@ func (store JobOfferMongoDBStore) FilterJobs(filter *domain.JobFilter) ([]*domai
 	if filter.SortDate == 1 {
 		findOptions.SetSort(bson.D{{"published", -1}})
 	}
-	fmt.Printf("Employment type : %s\n", filter.Position)
 	if filter.EmploymentType != 3 {
 		empType = bson.M{"employment_type": filter.EmploymentType}
 	}
 	compId, _ := primitive.ObjectIDFromHex(filter.Company)
 	if filter.Company != "-1" {
-		fmt.Printf("Company id: %s\n", compId)
 		company = bson.M{"company._id": compId}
 	}
 

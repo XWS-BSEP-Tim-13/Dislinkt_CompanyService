@@ -2,12 +2,12 @@ package persistence
 
 import (
 	"context"
+	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/domain"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"strconv"
 )
 
 const (
@@ -26,17 +26,19 @@ func (store JobOfferMongoDBStore) FilterJobs(filter *domain.JobFilter) ([]*domai
 	findOptions := options.Find()
 	findOptions.SetSort(bson.D{{"likes", -1}, {"date", -1}})
 	if filter.SortDate == 0 {
-		findOptions.SetSort(bson.D{{"published", -1}})
-	}
-	if filter.SortDate == 1 {
 		findOptions.SetSort(bson.D{{"published", 1}})
 	}
+	if filter.SortDate == 1 {
+		findOptions.SetSort(bson.D{{"published", -1}})
+	}
+	fmt.Printf("Employment type : %s\n", filter.Position)
 	if filter.EmploymentType != 3 {
 		empType = bson.M{"employment_type": filter.EmploymentType}
 	}
-	compId, _ := strconv.Atoi(filter.Company)
-	if compId != -1 {
-		company = bson.M{"company._id": filter.Company}
+	compId, _ := primitive.ObjectIDFromHex(filter.Company)
+	if filter.Company != "-1" {
+		fmt.Printf("Company id: %s\n", compId)
+		company = bson.M{"company._id": compId}
 	}
 
 	filterr := bson.M{
@@ -51,6 +53,7 @@ func (store JobOfferMongoDBStore) FilterJobs(filter *domain.JobFilter) ([]*domai
 		return nil, err
 	}
 	jobs, _ := decodeJobs(cursor)
+	fmt.Printf("Broj poslova: %d\n", len(jobs))
 	return jobs, nil
 }
 
@@ -72,6 +75,7 @@ func (store JobOfferMongoDBStore) GetAllActive() ([]*domain.JobOffer, error) {
 }
 
 func (store JobOfferMongoDBStore) Insert(jobOffer *domain.JobOffer) error {
+	jobOffer.Id = primitive.NewObjectID()
 	result, err := store.jobs.InsertOne(context.TODO(), jobOffer)
 	if err != nil {
 		return err

@@ -57,6 +57,7 @@ func (handler *CompanyHandler) CreateJobOffer(ctx context.Context, request *pb.J
 }
 
 func (handler *CompanyHandler) FilterJobOffers(ctx context.Context, request *pb.FilterJobsRequest) (*pb.GetAllJobsResponse, error) {
+	fmt.Printf("Request started %s\n", request.Filter.CompanyId)
 	filter := mapPbFilterToDomain(request.Filter)
 	jobs, err := handler.service.FilterJobs(filter)
 	if err != nil {

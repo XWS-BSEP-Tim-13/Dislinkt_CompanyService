@@ -5,6 +5,7 @@ import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/domain/enum"
 	pb "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/grpc/proto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
 
@@ -23,9 +24,11 @@ func mapCompanyDomainToPb(company *domain.Company) *pb.Company {
 }
 
 func mapJobOfferDtoToDomain(jobOfferDto *pb.JobOfferDto) *domain.JobOffer {
+	compId, _ := primitive.ObjectIDFromHex(jobOfferDto.Company.Id)
 	jobOffer := &domain.JobOffer{
 		Id: primitive.NewObjectID(),
 		Company: domain.Company{
+			Id:          compId,
 			CompanyName: jobOfferDto.Company.CompanyName,
 			Username:    jobOfferDto.Company.Username,
 			Email:       jobOfferDto.Company.Email,
@@ -72,6 +75,7 @@ func mapJobDomainToPb(job *domain.JobOffer) *pb.JobOffer {
 			CompanySize: job.Company.CompanySize,
 			Industry:    job.Company.Industry,
 		},
+		Published: timestamppb.New(job.Published),
 	}
 	return jobPb
 }

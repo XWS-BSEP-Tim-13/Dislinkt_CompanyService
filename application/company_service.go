@@ -3,18 +3,21 @@ package application
 import (
 	"errors"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/domain"
+	logger "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/logging"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type CompanyService struct {
 	store    domain.CompanyStore
 	jobStore domain.JobOfferStore
+	logger   *logger.Logger
 }
 
-func NewCompanyService(store domain.CompanyStore, jobStore domain.JobOfferStore) *CompanyService {
+func NewCompanyService(store domain.CompanyStore, jobStore domain.JobOfferStore, logger *logger.Logger) *CompanyService {
 	return &CompanyService{
 		store:    store,
 		jobStore: jobStore,
+		logger:   logger,
 	}
 }
 

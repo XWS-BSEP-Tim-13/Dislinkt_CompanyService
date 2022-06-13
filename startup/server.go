@@ -1,12 +1,14 @@
 package startup
 
 import (
+	"context"
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/application"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/domain"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/api"
 	company "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/grpc/proto"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/persistence"
+	logger "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/logging"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/startup/config"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/util"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -26,13 +28,14 @@ func NewServer(config *config.Config) *Server {
 }
 
 func (server *Server) Start() {
+	logger := logger.InitLogger("company-service", context.TODO())
+
 	mongoClient := server.initMongoClient()
 	companyStore := server.initCompanyStore(mongoClient)
 	jobsStore := server.initJobsStore(mongoClient)
-	companyService := server.initCompanyService(companyStore, jobsStore)
+	companyService := server.initCompanyService(companyStore, jobsStore, logger)
 	goValidator := server.initGoValidator()
-
-	companyHandler := server.initCompanyHandler(companyService, goValidator)
+	companyHandler := server.initCompanyHandler(companyService, goValidator, logger)
 
 	server.startGrpcServer(companyHandler)
 }
@@ -69,16 +72,16 @@ func (server *Server) initJobsStore(client *mongo.Client) domain.JobOfferStore {
 	return store
 }
 
-func (server *Server) initCompanyService(store domain.CompanyStore, jobStore domain.JobOfferStore) *application.CompanyService {
-	return application.NewCompanyService(store, jobStore)
+func (server *Server) initCompanyService(store domain.CompanyStore, jobStore domain.JobOfferStore, logger *logger.Logger) *application.CompanyService {
+	return application.NewCompanyService(store, jobStore, logger)
 }
 
 func (server *Server) initGoValidator() *util.GoValidator {
 	return util.NewGoValidator()
 }
 
-func (server *Server) initCompanyHandler(service *application.CompanyService, goValidator *util.GoValidator) *api.CompanyHandler {
-	return api.NewCompanyHandler(service, goValidator)
+func (server *Server) initCompanyHandler(service *application.CompanyService, goValidator *util.GoValidator, logger *logger.Logger) *api.CompanyHandler {
+	return api.NewCompanyHandler(service, goValidator, logger)
 }
 
 func (server *Server) startGrpcServer(productHandler *api.CompanyHandler) {

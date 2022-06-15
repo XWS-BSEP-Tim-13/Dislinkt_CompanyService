@@ -31,13 +31,13 @@ func (handler *CompanyHandler) CreateCompany(ctx context.Context, request *pb.Ne
 
 	err := handler.goValidator.Validator.Struct(company)
 	if err != nil {
-		handler.logger.WarningMessage("Action: Company registration with invalid data")
+		handler.logger.WarningMessage("Action: CR")
 		return nil, status.Error(500, err.Error())
 	}
 
 	newCompany, err := handler.service.CreateNewCompany(company)
 	if err != nil {
-		handler.logger.ErrorMessage("Action: Company registration")
+		handler.logger.ErrorMessage("Action: CR")
 		return nil, status.Error(400, err.Error())
 	}
 
@@ -45,7 +45,7 @@ func (handler *CompanyHandler) CreateCompany(ctx context.Context, request *pb.Ne
 		Company: mapCompanyDomainToPb(newCompany),
 	}
 
-	handler.logger.InfoMessage("Action: New company registered - " + company.CompanyName)
+	handler.logger.InfoMessage("Action: CR - " + company.CompanyName)
 	return response, nil
 }
 
@@ -53,14 +53,14 @@ func (handler *CompanyHandler) CreateJobOffer(ctx context.Context, request *pb.J
 	job := mapJobOfferDtoToDomain(request.Dto)
 	err := handler.service.InsertJobOffer(job)
 	if err != nil {
-		handler.logger.ErrorMessage("Company: " + job.Company.Username + " | Action: Create job offer")
+		handler.logger.ErrorMessage("Company: " + job.Company.Username + " | Action: CJO")
 		return nil, status.Error(400, err.Error())
 	}
 	response := &pb.JobOfferResponse{
 		Id: primitive.ObjectID.String(job.Id),
 	}
 
-	handler.logger.InfoMessage("Company: " + job.Company.Username + " | Action: Create job offer")
+	handler.logger.InfoMessage("Company: " + job.Company.Username + " | Action: CJO")
 	return response, nil
 }
 
@@ -90,7 +90,7 @@ func (handler *CompanyHandler) GetJobOffers(ctx context.Context, request *pb.Emp
 	}
 	resp, err := handler.service.GetAllJobs()
 	if err != nil {
-		handler.logger.ErrorMessage("User: " + loggedUser + " | Action: Get job offers")
+		handler.logger.ErrorMessage("User: " + loggedUser + " | Action: GJO")
 		return nil, status.Error(500, err.Error())
 	}
 	response := &pb.GetAllJobsResponse{
@@ -102,7 +102,7 @@ func (handler *CompanyHandler) GetJobOffers(ctx context.Context, request *pb.Emp
 		response.Jobs = append(response.Jobs, current)
 	}
 
-	handler.logger.InfoMessage("User: " + loggedUser + " | Action: Get job offers")
+	handler.logger.InfoMessage("User: " + loggedUser + " | Action: GJO")
 	return response, nil
 }
 
@@ -111,7 +111,7 @@ func (handler *CompanyHandler) ActivateAccount(ctx context.Context, request *pb.
 
 	resp, err := handler.service.ActivateAccount(email)
 	if err != nil {
-		handler.logger.ErrorMessage("Company: " + email + " | Action: Activate account")
+		handler.logger.ErrorMessage("Company: " + email + " | Action: AA")
 		return nil, status.Error(500, err.Error())
 	}
 
@@ -119,7 +119,7 @@ func (handler *CompanyHandler) ActivateAccount(ctx context.Context, request *pb.
 		Message: resp,
 	}
 
-	handler.logger.InfoMessage("Company: " + email + " | Action: Activate account")
+	handler.logger.InfoMessage("Company: " + email + " | Action: AA")
 	return response, nil
 }
 
@@ -136,7 +136,7 @@ func (handler *CompanyHandler) Get(ctx context.Context, request *pb.GetRequest) 
 	}
 	company, err := handler.service.Get(objectId)
 	if err != nil {
-		handler.logger.ErrorMessage("User: " + loggedUser + " | Action: Get company by id")
+		handler.logger.ErrorMessage("User: " + loggedUser + " | Action: c/id")
 		return nil, err
 	}
 	companyPb := mapCompanyDomainToPb(company)
@@ -144,7 +144,7 @@ func (handler *CompanyHandler) Get(ctx context.Context, request *pb.GetRequest) 
 		Company: companyPb,
 	}
 
-	handler.logger.InfoMessage("User: " + loggedUser + " | Action: Get company by id")
+	handler.logger.InfoMessage("User: " + loggedUser + " | Action:c/id")
 	return response, nil
 }
 
@@ -157,7 +157,7 @@ func (handler *CompanyHandler) GetAll(ctx context.Context, request *pb.GetAllReq
 
 	companies, err := handler.service.GetAll()
 	if err != nil {
-		handler.logger.ErrorMessage("User: " + loggedUser + " | Action: Get companies")
+		handler.logger.ErrorMessage("User: " + loggedUser + " | Action: GC")
 		return nil, err
 	}
 	response := &pb.GetAllResponse{
@@ -167,6 +167,6 @@ func (handler *CompanyHandler) GetAll(ctx context.Context, request *pb.GetAllReq
 		current := mapCompanyDomainToPb(company)
 		response.Companies = append(response.Companies, current)
 	}
-	handler.logger.InfoMessage("User: " + loggedUser + " | Action: Get companies")
+	handler.logger.InfoMessage("User: " + loggedUser + " | Action: GC")
 	return response, nil
 }

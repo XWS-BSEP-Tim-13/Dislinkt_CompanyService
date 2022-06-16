@@ -26,9 +26,10 @@ type Server struct {
 }
 
 const (
-	serverCertFile = "cert/cert.pem"
-	serverKeyFile  = "cert/key.pem"
-	clientCertFile = "cert/client-cert.pem"
+	serverCertFile  = "cert/cert.pem"
+	serverKeyFile   = "cert/key.pem"
+	clientCertFile  = "cert/client-cert.pem"
+	gatewayCertFile = "cert/gw-cert.pem"
 )
 
 func NewServer(config *config.Config) *Server {
@@ -105,15 +106,23 @@ func (server *Server) startGrpcServer(productHandler *api.CompanyHandler) {
 		log.Fatal(err)
 	}
 
+	pemGWCA, err := ioutil.ReadFile(gatewayCertFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	certPool := x509.NewCertPool()
 	if !certPool.AppendCertsFromPEM(pemClientCA) {
+		log.Fatal(err)
+	}
+	if !certPool.AppendCertsFromPEM(pemGWCA) {
 		log.Fatal(err)
 	}
 
 	config := &tls.Config{
 		Certificates: []tls.Certificate{cert},
-		ClientAuth:   tls.NoClientCert,
-		//ClientCAs:    certPool,
+		ClientAuth:   tls.RequestClientCert,
+		ClientCAs:    certPool,
 	}
 
 	opts := []grpc.ServerOption{

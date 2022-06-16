@@ -26,10 +26,9 @@ type Server struct {
 }
 
 const (
-	serverCertFile  = "cert/cert.pem"
-	serverKeyFile   = "cert/key.pem"
-	clientCertFile  = "cert/client-cert.pem"
-	gatewayCertFile = "cert/gw-cert.pem"
+	serverCertFile = "cert/cert.pem"
+	serverKeyFile  = "cert/key.pem"
+	clientCertFile = "cert/client-cert.pem"
 )
 
 func NewServer(config *config.Config) *Server {

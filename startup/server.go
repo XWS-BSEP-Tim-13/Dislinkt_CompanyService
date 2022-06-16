@@ -106,16 +106,8 @@ func (server *Server) startGrpcServer(productHandler *api.CompanyHandler) {
 		log.Fatal(err)
 	}
 
-	pemGWCA, err := ioutil.ReadFile(gatewayCertFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	certPool := x509.NewCertPool()
 	if !certPool.AppendCertsFromPEM(pemClientCA) {
-		log.Fatal(err)
-	}
-	if !certPool.AppendCertsFromPEM(pemGWCA) {
 		log.Fatal(err)
 	}
 

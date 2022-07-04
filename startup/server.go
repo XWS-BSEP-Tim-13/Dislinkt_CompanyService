@@ -10,15 +10,21 @@ import (
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/persistence"
 	logger "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/logging"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/startup/config"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/tracer"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/util"
+	otgrpc "github.com/opentracing-contrib/go-grpc"
+	otgo "github.com/opentracing/opentracing-go"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 	"net"
 )
 
 type Server struct {
 	config *config.Config
+	tracer otgo.Tracer
+	closer io.Closer
 }
 
 const (
@@ -28,8 +34,13 @@ const (
 )
 
 func NewServer(config *config.Config) *Server {
+	tracer, closer := tracer.Init()
+	otgo.SetGlobalTracer(tracer)
+
 	return &Server{
 		config: config,
+		tracer: tracer,
+		closer: closer,
 	}
 }
 
@@ -110,18 +121,21 @@ func (server *Server) startGrpcServer(productHandler *api.CompanyHandler) {
 		Certificates: []tls.Certificate{cert},
 		ClientAuth:   tls.RequestClientCert,
 		ClientCAs:    certPool,
-	}
+	}*/
 
 	opts := []grpc.ServerOption{
-		grpc.Creds(credentials.NewTLS(config)),
-	}*/
+		grpc.UnaryInterceptor(
+			otgrpc.OpenTracingServerInterceptor(server.tracer)),
+		grpc.StreamInterceptor(
+			otgrpc.OpenTracingStreamServerInterceptor(server.tracer)),
+	}
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(opts...)
 	company.RegisterCompanyServiceServer(grpcServer, productHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)

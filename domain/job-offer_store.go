@@ -1,11 +1,14 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type JobOfferStore interface {
-	GetActiveById(id primitive.ObjectID) (*JobOffer, error)
-	GetAllActive() ([]*JobOffer, error)
-	Insert(jobOffer *JobOffer) error
-	DeleteAll()
-	FilterJobs(filter *JobFilter) ([]*JobOffer, error)
+	GetActiveById(ctx context.Context, id primitive.ObjectID) (*JobOffer, error)
+	GetAllActive(ctx context.Context) ([]*JobOffer, error)
+	Insert(ctx context.Context, jobOffer *JobOffer) error
+	DeleteAll(ctx context.Context)
+	FilterJobs(ctx context.Context, filter *JobFilter) ([]*JobOffer, error)
 }

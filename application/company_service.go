@@ -1,9 +1,11 @@
 package application
 
 import (
+	"context"
 	"errors"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/domain"
 	logger "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/logging"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/tracer"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -21,22 +23,37 @@ func NewCompanyService(store domain.CompanyStore, jobStore domain.JobOfferStore,
 	}
 }
 
-func (service *CompanyService) Get(id primitive.ObjectID) (*domain.Company, error) {
-	return service.store.GetActiveById(id)
+func (service *CompanyService) Get(ctx context.Context, id primitive.ObjectID) (*domain.Company, error) {
+	span := tracer.StartSpanFromContext(ctx, "SERVICE Get")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	return service.store.GetActiveById(ctx, id)
 }
 
-func (service *CompanyService) GetAll() ([]*domain.Company, error) {
-	return service.store.GetAllActive()
+func (service *CompanyService) GetAll(ctx context.Context) ([]*domain.Company, error) {
+	span := tracer.StartSpanFromContext(ctx, "SERVICE GetAll")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	return service.store.GetAllActive(ctx)
 }
 
-func (service *CompanyService) CreateNewCompany(company *domain.Company) (*domain.Company, error) {
-	dbCompany, _ := service.store.GetByUsername((*company).Username)
+func (service *CompanyService) CreateNewCompany(ctx context.Context, company *domain.Company) (*domain.Company, error) {
+	span := tracer.StartSpanFromContext(ctx, "SERVICE CreateNewCompany")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	dbCompany, _ := service.store.GetByUsername(ctx, (*company).Username)
 	if dbCompany != nil {
 		err := errors.New("username already exists")
 		return nil, err
 	}
 
-	dbCompany, _ = service.store.GetByUsername((*company).Username)
+	dbCompany, _ = service.store.GetByUsername(ctx, (*company).Username)
 	if dbCompany != nil {
 		err := errors.New("email already exists")
 		return nil, err
@@ -44,7 +61,7 @@ func (service *CompanyService) CreateNewCompany(company *domain.Company) (*domai
 
 	(*company).Id = primitive.NewObjectID()
 	(*company).IsActive = false
-	err := service.store.Insert(company)
+	err := service.store.Insert(ctx, company)
 	if err != nil {
 		err := errors.New("error while creating new company")
 		return nil, err
@@ -53,16 +70,31 @@ func (service *CompanyService) CreateNewCompany(company *domain.Company) (*domai
 	return company, nil
 }
 
-func (service *CompanyService) InsertJobOffer(job *domain.JobOffer) error {
-	return service.jobStore.Insert(job)
+func (service *CompanyService) InsertJobOffer(ctx context.Context, job *domain.JobOffer) error {
+	span := tracer.StartSpanFromContext(ctx, "SERVICE InsertJobOffer")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	return service.jobStore.Insert(ctx, job)
 }
 
-func (service *CompanyService) GetAllJobs() ([]*domain.JobOffer, error) {
-	return service.jobStore.GetAllActive()
+func (service *CompanyService) GetAllJobs(ctx context.Context) ([]*domain.JobOffer, error) {
+	span := tracer.StartSpanFromContext(ctx, "SERVICE GetAllJobs")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	return service.jobStore.GetAllActive(ctx)
 }
 
-func (service *CompanyService) ActivateAccount(email string) (string, error) {
-	err := service.store.UpdateIsActive(email)
+func (service *CompanyService) ActivateAccount(ctx context.Context, email string) (string, error) {
+	span := tracer.StartSpanFromContext(ctx, "SERVICE ActivateAccount")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	err := service.store.UpdateIsActive(ctx, email)
 	if err != nil {
 		err := errors.New("error activating account")
 		return "", err
@@ -71,6 +103,11 @@ func (service *CompanyService) ActivateAccount(email string) (string, error) {
 	return "Account successfully activated!", nil
 }
 
-func (service *CompanyService) FilterJobs(filter *domain.JobFilter) ([]*domain.JobOffer, error) {
-	return service.jobStore.FilterJobs(filter)
+func (service *CompanyService) FilterJobs(ctx context.Context, filter *domain.JobFilter) ([]*domain.JobOffer, error) {
+	span := tracer.StartSpanFromContext(ctx, "SERVICE FilterJobs")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	return service.jobStore.FilterJobs(ctx, filter)
 }

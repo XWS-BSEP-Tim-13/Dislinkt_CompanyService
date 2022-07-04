@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/domain"
+	"github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/tracer"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,7 +20,12 @@ type JobOfferMongoDBStore struct {
 	jobs *mongo.Collection
 }
 
-func (store JobOfferMongoDBStore) FilterJobs(filter *domain.JobFilter) ([]*domain.JobOffer, error) {
+func (store JobOfferMongoDBStore) FilterJobs(ctx context.Context, filter *domain.JobFilter) ([]*domain.JobOffer, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB FilterJobs")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	empType := bson.M{}
 	position := bson.M{"position": primitive.Regex{Pattern: filter.Position, Options: "i"}}
 	company := bson.M{}
@@ -52,7 +58,7 @@ func (store JobOfferMongoDBStore) FilterJobs(filter *domain.JobFilter) ([]*domai
 	if err != nil {
 		return nil, err
 	}
-	jobs, _ := decodeJobs(cursor)
+	jobs, _ := decodeJobs(ctx, cursor)
 	fmt.Printf("Broj poslova: %d\n", len(jobs))
 	return jobs, nil
 }
@@ -64,17 +70,32 @@ func NewJobOfferMongoDBStore(client *mongo.Client) domain.JobOfferStore {
 	}
 }
 
-func (store JobOfferMongoDBStore) GetActiveById(id primitive.ObjectID) (*domain.JobOffer, error) {
+func (store JobOfferMongoDBStore) GetActiveById(ctx context.Context, id primitive.ObjectID) (*domain.JobOffer, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB GetActiveById")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := bson.M{"_id": id}
-	return store.filterOne(filter)
+	return store.filterOne(ctx, filter)
 }
 
-func (store JobOfferMongoDBStore) GetAllActive() ([]*domain.JobOffer, error) {
+func (store JobOfferMongoDBStore) GetAllActive(ctx context.Context) ([]*domain.JobOffer, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB GetAllActive")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	filter := bson.D{{}}
-	return store.filter(filter)
+	return store.filter(ctx, filter)
 }
 
-func (store JobOfferMongoDBStore) Insert(jobOffer *domain.JobOffer) error {
+func (store JobOfferMongoDBStore) Insert(ctx context.Context, jobOffer *domain.JobOffer) error {
+	span := tracer.StartSpanFromContext(ctx, "DB Insert")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	jobOffer.Id = primitive.NewObjectID()
 	result, err := store.jobs.InsertOne(context.TODO(), jobOffer)
 	if err != nil {
@@ -84,27 +105,47 @@ func (store JobOfferMongoDBStore) Insert(jobOffer *domain.JobOffer) error {
 	return nil
 }
 
-func (store *JobOfferMongoDBStore) filterOne(filter interface{}) (job *domain.JobOffer, err error) {
+func (store *JobOfferMongoDBStore) filterOne(ctx context.Context, filter interface{}) (job *domain.JobOffer, err error) {
+	span := tracer.StartSpanFromContext(ctx, "DB Insert")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	result := store.jobs.FindOne(context.TODO(), filter)
 	err = result.Decode(&job)
 	return
 }
 
-func (store *JobOfferMongoDBStore) filter(filter interface{}) ([]*domain.JobOffer, error) {
+func (store *JobOfferMongoDBStore) filter(ctx context.Context, filter interface{}) ([]*domain.JobOffer, error) {
+	span := tracer.StartSpanFromContext(ctx, "DB filter")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	cursor, err := store.jobs.Find(context.TODO(), filter)
 	defer cursor.Close(context.TODO())
 
 	if err != nil {
 		return nil, err
 	}
-	return decodeJobs(cursor)
+	return decodeJobs(ctx, cursor)
 }
 
-func (store JobOfferMongoDBStore) DeleteAll() {
+func (store JobOfferMongoDBStore) DeleteAll(ctx context.Context) {
+	span := tracer.StartSpanFromContext(ctx, "DB DeleteAll")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	store.jobs.DeleteMany(context.TODO(), bson.D{{}})
 }
 
-func decodeJobs(cursor *mongo.Cursor) (jobs []*domain.JobOffer, err error) {
+func decodeJobs(ctx context.Context, cursor *mongo.Cursor) (jobs []*domain.JobOffer, err error) {
+	span := tracer.StartSpanFromContext(ctx, "DB decodeJobs")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	for cursor.Next(context.TODO()) {
 		var job domain.JobOffer
 		err = cursor.Decode(&job)

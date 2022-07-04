@@ -67,9 +67,9 @@ func (server *Server) initMongoClient() *mongo.Client {
 
 func (server *Server) initCompanyStore(client *mongo.Client) domain.CompanyStore {
 	store := persistence.NewCompanyMongoDBStore(client)
-	store.DeleteAll()
+	store.DeleteAll(context.TODO())
 	for _, company := range companies {
-		err := store.Insert(company)
+		err := store.Insert(context.TODO(), company)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -79,9 +79,9 @@ func (server *Server) initCompanyStore(client *mongo.Client) domain.CompanyStore
 
 func (server *Server) initJobsStore(client *mongo.Client) domain.JobOfferStore {
 	store := persistence.NewJobOfferMongoDBStore(client)
-	store.DeleteAll()
+	store.DeleteAll(context.TODO())
 	for _, job := range jobs {
-		err := store.Insert(job)
+		err := store.Insert(context.TODO(), job)
 		if err != nil {
 			log.Fatal(err)
 		}

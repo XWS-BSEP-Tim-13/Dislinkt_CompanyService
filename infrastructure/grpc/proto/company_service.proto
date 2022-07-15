@@ -1,0 +1,142 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-BSEP-Tim-13/Dislinkt_CompanyService/infrastructure/grpc/proto";
+
+package company;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service CompanyService{
+  rpc Get(GetRequest) returns(GetResponse) {
+    option (google.api.http) = {
+      get: "/company/{id}"
+    };
+  }
+  rpc GetAll(GetAllRequest) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/company"
+    };
+  }
+  
+  rpc CreateCompany(NewCompany) returns (NewCompany) {}
+
+  rpc ActivateAccount(ActivateAccountRequest) returns(ActivateAccountResponse){}
+
+  rpc CreateJobOffer(JobOfferRequest) returns(JobOfferResponse){
+    option (google.api.http) = {
+      post: "/company/job-offer"
+      body: "dto"
+    };
+  }
+  rpc GetJobOffers(EmptyMessage) returns(GetAllJobsResponse){
+    option (google.api.http) = {
+      get: "/company/job-offer"
+    };
+  }
+  rpc FilterJobOffers(FilterJobsRequest) returns(GetAllJobsResponse){
+    option (google.api.http) = {
+      post: "/company/job-offer/filter"
+      body: "filter"
+    };
+  }
+}
+
+message FilterJobsRequest{
+    FilterBody filter=1;
+}
+
+message FilterBody{
+    SortDate date=1;
+    EmploymentType type =2;
+    string companyId =3;
+    string position =4;
+}
+
+message EmptyMessage{}
+
+message GetRequest {
+  string id = 1;
+}
+
+message GetResponse {
+  Company company = 1;
+}
+
+message GetAllRequest {
+}
+
+message GetAllResponse {
+  repeated Company companies = 1;
+}
+
+message NewCompany {
+  Company company = 1;
+}
+
+message GetAllJobsResponse {
+  repeated JobOffer jobs = 1;
+}
+
+message Company {
+  string id = 1;
+  string companyName = 2;
+  string username = 3;
+  string email = 4;
+  string phoneNumber = 5;
+  string description = 6;
+  string location = 7;
+  string website = 8;
+  string companySize = 9;
+  string industry = 10;
+}
+
+message  JobOfferRequest{
+    JobOfferDto dto=1;
+}
+message  JobOfferDto{
+  string position = 1;
+  string jobDescription = 2;
+  string prerequisites = 3;
+  Company company = 4;
+  EmploymentType employment_type=5;
+}
+message  JobOfferResponse{
+  string id=1;
+}
+
+message JobOffer {
+  string id = 1;
+  string position = 2;
+  string jobDescription = 3;
+  string prerequisites = 4;
+  Company company = 5;
+  EmploymentType employment_type=6;
+  google.protobuf.Timestamp published =7;
+}
+
+message ActivateAccountRequest {
+  string email = 1;
+}
+
+message ActivateAccountResponse {
+  string message = 1;
+}
+
+enum ReactionType {
+  LIKE = 0;
+  DISLIKE = 1;
+}
+
+enum SortDate{
+  LATEST = 0;
+  OLDEST = 1;
+  NONE_DATE =2;
+}
+
+enum EmploymentType {
+  FULL_TIME = 0;
+  PART_TIME = 1;
+  INTERNSHIP = 2;
+  NONE = 3;
+}
